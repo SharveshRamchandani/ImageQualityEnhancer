@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super-Resolution Image Upload</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Super-Resolution Image Generator</h1>
+        <div class="upload-section">
+            <label for="file-input">Upload Low-Resolution Image:</label>
+            <input type="file" id="file-input" accept="image/*">
+            <button id="upload-btn">Upload and Process</button>
+        </div>
+
+        <div class="output-section">
+            <h2>Low-Resolution Image:</h2>
+            <img id="lr-image" src="" alt="Low-resolution preview" />
+            
+            <h2>Super-Resolved Image:</h2>
+            <img id="sr-image" src="" alt="Super-resolved image will appear here" />
+        </div>
+    </div>
+    <script>
+        document.getElementById('upload-btn').addEventListener('click', function() {
+    let fileInput = document.getElementById('file-input');
+    let lrImage = document.getElementById('lr-image');
+    let srImage = document.getElementById('sr-image');
+
+    if (fileInput.files.length == 0) {
+        alert("Please upload an image!");
+        return;
+    }
+
+    let file = fileInput.files[0];
+    let formData = new FormData();
+    formData.append('file', file);
+
+    // Show low-resolution preview
+    lrImage.src = URL.createObjectURL(file);
+
+    // Send the image to the backend for processing
+    fetch('http://localhost:5000/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        // Create a URL for the super-resolved image and display it
+        srImage.src = URL.createObjectURL(blob);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+});
+
+    </script>
+</body>
+</html>

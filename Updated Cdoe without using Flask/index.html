@@ -1,0 +1,65 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super-Resolution Image Upload</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Super-Resolution Image Generator</h1>
+    <div class="upload-section">
+      <label for="file-input">Upload Low-Resolution Image:</label>
+      <input type="file" id="file-input" accept="image/*" required>
+      <button id="upload-btn">Upload and Process</button>
+    </div>
+
+    <div class="output-section">
+      <h2>Low-Resolution Image:</h2>
+      <img id="lr-image" src="" alt="Low-resolution preview" />
+
+      <h2>Super-Resolved Image:</h2>
+      <img id="sr-image" src="" alt="Super-resolved image will appear here" />
+    </div>
+  </div>
+  <script>
+    const apiUrl = 'http://localhost:5000/upload'; // Replace with your API endpoint
+
+    document.getElementById('upload-btn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('file-input');
+      const lrImage = document.getElementById('lr-image');
+      const srImage = document.getElementById('sr-image');
+
+      if (!fileInput.files[0]) {
+        alert("Please upload an image!");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Show low-resolution preview
+      lrImage.src = URL.createObjectURL(file);
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        srImage.src = URL.createObjectURL(blob);
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>
